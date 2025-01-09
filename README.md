@@ -35,6 +35,11 @@
 2. [**`terragrunt_create`** script explanation](./docs/01.2-Terragrunt-run-script-expl.md)
     
     ```bash
+    scripts/terragrunt_create.sh --env staging --region westindia --module resource-group --plan
+    
+    # Add sed if getting special characters in output
+    scripts/terragrunt_create.sh --env staging --region westindia --module resource-group --plan | sed -r 's/\x1b\[[0-9;]*m//g'
+    
     scripts/terragrunt_create.sh --env staging --region westindia --module networking --plan
     ```
 

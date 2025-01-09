@@ -5,9 +5,11 @@ Infrastructure deployment script for your Terragrunt structure:
 Options:
     -e, --env     (Required) Environment name (e.g., staging, production)
     -r, --region  (Required) Region name (e.g., west-india, east-us)
-    -m, --module  (Optional) Module name (e.g., networking, apps). Deploys all modules if omitted.
-    -a, --all     (Optional) Create all modules under the specified region.
+    -m, --module  (Optional) Module name (e.g., networking, apps). Operates on all modules if omitted.
+    -a, --all     (Optional) Apply all modules under the specified region.
     -p, --plan    (Optional) Plan only. Do not apply.
+    -d, --destroy (Optional) Destroy the infrastructure.
+    --init        (Optional) Run terragrunt init before other operations.
     -h, --help    Show this help message.
 EOF
     exit 1
@@ -19,6 +21,8 @@ REGION=""
 MODULE=""
 CREATE_ALL=false
 PLAN_ONLY=false
+DESTROY=false
+RUN_INIT=false
 
 # Parse input flags
 while [[ "$#" -gt 0 ]]; do
@@ -28,6 +32,8 @@ while [[ "$#" -gt 0 ]]; do
         -m|--module) MODULE="$2"; shift ;;
         -a|--all) CREATE_ALL=true ;;
         -p|--plan) PLAN_ONLY=true ;;
+        -d|--destroy) DESTROY=true ;;
+        --init) RUN_INIT=true ;;
         -h|--help) usage ;;
         *) echo "Unknown option: $1"; usage ;;
     esac
@@ -47,6 +53,8 @@ Region: ${REGION}
 Module: ${MODULE:-"ALL"}
 Create All: ${CREATE_ALL}
 Plan Only: ${PLAN_ONLY}
+Destroy: ${DESTROY}
+Run Init: ${RUN_INIT}
 EOF
 
 # Define the base directory
@@ -69,28 +77,37 @@ if [[ ! -d "$WORKING_DIR" ]]; then
     exit 1
 fi
 
- # Validate the infrastructure
-echo "=== Validating infrastructure in $WORKING_DIR ==="
-# terragrunt run-all validate \
-#     --terragrunt-working-dir "$WORKING_DIR" \
-#     --terragrunt-include-external-dependencies \
-#     --terragrunt-non-interactive
+# Run terragrunt init if --init flag is set
+if [[ "$RUN_INIT" == "true" ]]; then
+    echo "=== Initializing infrastructure in $WORKING_DIR ==="
+    terragrunt init \
+        --terragrunt-working-dir "$WORKING_DIR" \
+        --terragrunt-non-interactive
+fi
 
-export TF_CLI_ARGS="-no-color"
-export NO_COLOR="1"
-
-# Plan or apply based on the PLAN_ONLY flag
-if [[ "$PLAN_ONLY" == "true" ]]; then
+# Handle destroy operation
+if [[ "$DESTROY" == "true" ]]; then
+    echo "=== Destroying infrastructure in $WORKING_DIR ==="
+    read -p "Are you sure you want to destroy the infrastructure in $WORKING_DIR? (y/N): " confirm
+    if [[ "$confirm" =~ ^[Yy]$ ]]; then
+        terragrunt run-all destroy \
+            --terragrunt-working-dir "$WORKING_DIR" \
+            --terragrunt-include-external-dependencies \
+            --terragrunt-non-interactive
+    else
+        echo "Aborted destroy operation."
+        exit 0
+    fi
+elif [[ "$PLAN_ONLY" == "true" ]]; then
     echo "=== Planning infrastructure changes in $WORKING_DIR ==="
-    terragrunt run-all plan  \
+    terragrunt run-all plan \
         --terragrunt-working-dir "$WORKING_DIR" \
         --terragrunt-include-external-dependencies \
-        --terragrunt-non-interactive -no-color
-        
+        --terragrunt-non-interactive
 else
     if [[ "$CREATE_ALL" == "true" ]]; then
         echo "=== Applying all modules in $WORKING_DIR ==="
-        terragrunt run-all -no-color  apply  \
+        terragrunt run-all apply \
             --terragrunt-working-dir "$WORKING_DIR" \
             --terragrunt-include-external-dependencies \
             --terragrunt-non-interactive
@@ -98,7 +115,7 @@ else
         read -p "Are you sure you want to apply changes to $WORKING_DIR? (y/N): " confirm
         if [[ "$confirm" =~ ^[Yy]$ ]]; then
             echo "=== Applying infrastructure changes in $WORKING_DIR ==="
-            terragrunt run-all -no-color apply \
+            terragrunt run-all apply \
                 --terragrunt-working-dir "$WORKING_DIR" \
                 --terragrunt-include-external-dependencies \
                 --terragrunt-non-interactive

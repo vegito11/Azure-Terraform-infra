@@ -11,9 +11,7 @@ locals {
   deployment_storage_resource_group_name = get_env("MGMT_RG_NAME", "management")
   deployment_region                      = local.region_vars.locals.region_name
   use_remote_state                       = get_env("USE_REMOTE_STATE", "true")
-  # current_component                      = run_cmd("basename", "${get_path_to_repo_root()}") 
   current_component                      = run_cmd("basename", get_terragrunt_dir())
-  #  bst_service = "${get_original_terragrunt_dir()} -- -- ${get_path_from_repo_root()} -- ${get_path_to_repo_root()}"
 }
 
 # Generate an Azure provider block

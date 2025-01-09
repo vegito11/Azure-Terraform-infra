@@ -1,15 +1,12 @@
 include "root" {
-  path = find_in_parent_folders()
+  path = find_in_parent_folders("root.hcl")
+  expose = true
 }
 
-dependencies {
-  paths = ["../resource-group"]
-}
-
-terraform {
-  source = "${get_parent_terragrunt_dir()}/../modules//networking"
+include "env" {
+  path = "${get_terragrunt_dir()}/../../../_env/vnet.hcl"
 }
 
 inputs = {
-  service = run_cmd("basename", "${get_terragrunt_dir()}")
+  location = include.root.inputs.region_name
 }
