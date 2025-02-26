@@ -11,6 +11,11 @@ variable "address_space" {
 
 ##--------------------------------------------------------
 
+variable "enable_nat_gateway" {
+  type    = bool
+  default = false
+}
+
 variable "subnet_nat_gateway" {
   description = "Flag to conditionally add nat_gateway to subnets if not present"
   default = {
@@ -90,6 +95,13 @@ DESCRIPTION
 }
 
 variable "resource_group_name" {
+  type        = string
+  description = <<DESCRIPTION
+(Required) The name of the resource group where the resources will be deployed. 
+DESCRIPTION
+}
+
+variable "resource_group_id" {
   type        = string
   description = <<DESCRIPTION
 (Required) The name of the resource group where the resources will be deployed. 

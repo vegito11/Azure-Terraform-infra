@@ -17,6 +17,7 @@ inputs = merge(
   local.env_vars.locals,
   {
     resource_group_name = dependency.rg.outputs.default_resource_group_name
+    resource_group_id = dependency.rg.outputs.default_resource_group_id
     location = local.region_vars.locals.region_name
     name    = "${local.env_vars.locals.envname}-vnet"
   }

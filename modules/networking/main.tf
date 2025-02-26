@@ -13,6 +13,7 @@ resource "azurerm_network_ddos_protection_plan" "this" {
 
 #Creating a NAT Gateway in the specified location.
 resource "azurerm_nat_gateway" "this" {
+  count               = var.enable_nat_gateway ? 1 : 0
   location            = var.location
   name                = "${var.envname}-NAT"
   resource_group_name = var.resource_group_name
@@ -49,7 +50,7 @@ resource "azurerm_user_assigned_identity" "this" {
 }
 
 resource "azurerm_storage_account" "this" {
-  account_replication_type = "ZRS"
+  account_replication_type = "LRS"
   account_tier             = "Standard"
   location                 = var.location
   name                     = "${var.envname}0appstorage"
@@ -64,7 +65,7 @@ resource "azurerm_subnet_service_endpoint_storage_policy" "this" {
   definition {
     name = "${var.envname}-se-storage-policy"
     service_resources = [
-      var.resource_group_name,
+      var.resource_group_id,
       azurerm_storage_account.this.id
     ]
     description = "${var.envname} service endpoint storage policy"
@@ -79,6 +80,7 @@ module "vnet" {
   name                = "${var.envname}-vnet"
 
   address_space = var.address_space
+  enable_telemetry    = var.enable_telemetry
 
   dns_servers = {
     dns_servers = ["8.8.8.8"]
@@ -114,7 +116,7 @@ module "vnet" {
       {
 
          nat_gateway = lookup(var.subnet_nat_gateway, subnet_name, false) && (!contains(keys(subnet_config), "nat_gateway") || subnet_config["nat_gateway"] == null) ? {
-            id = azurerm_nat_gateway.this.id
+            id = var.enable_nat_gateway ? azurerm_nat_gateway.this[0].id : null
          } : lookup(subnet_config, "nat_gateway", null)
 
           network_security_group = lookup(var.subnet_network_security_group, subnet_name, false) && (!contains(keys(subnet_config), "network_security_group") || subnet_config["network_security_group"] == null) ? {
@@ -125,7 +127,7 @@ module "vnet" {
             id = azurerm_route_table.this.id
           } : lookup(subnet_config, "route_table", null)
 
-          service_endpoints = lookup(var.subnet_service_endpoints, subnet_name, []) != []  ? var.subnet_service_endpoints[subnet_name] : lookup(subnet_config, "service_endpoints", null)
+          service_endpoints = lookup(var.subnet_service_endpoints, subnet_name, null) != null && lookup(var.subnet_service_endpoints, subnet_name, []) != [] && (!contains(keys(subnet_config), "service_endpoints") || subnet_config["service_endpoints"] == null) ? lookup(var.subnet_service_endpoints, subnet_name, []) : lookup(subnet_config, "service_endpoints", null)
 
           service_endpoint_policies = lookup(var.subnet_service_endpoint_policies, subnet_name, false) && (!contains(keys(subnet_config), "service_endpoint_policies") || subnet_config["service_endpoint_policies"] == null) ? {
             policy1 = {
@@ -133,9 +135,6 @@ module "vnet" {
             }
           } : lookup(subnet_config, "service_endpoint_policies", null)
 
-          network_security_group = lookup(var.subnet_network_security_group, subnet_name, false) && (!contains(keys(subnet_config), "network_security_group") || subnet_config["network_security_group"] == null) ? {
-            id = azurerm_network_security_group.https.id
-          } : lookup(subnet_config, "network_security_group", null)
 
           delegation = lookup(var.subnet_delegations, subnet_name, []) != []  ? var.subnet_delegations[subnet_name] : lookup(subnet_config, "delegation", null)
 

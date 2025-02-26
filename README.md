@@ -43,6 +43,12 @@
     scripts/terragrunt_create.sh --env staging --region westindia --module networking --plan
     ```
 
+------------------------------------------------
+
+## Infra explanation 
+
+
+
 
 ## Reference
 
