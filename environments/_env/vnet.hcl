@@ -1,6 +1,5 @@
 terraform {
   source = "${get_parent_terragrunt_dir()}/../../modules//networking"
-  # source = "tfr:///Azure/avm-res-network-virtualnetwork/azurerm?version=0.7.1"
 }
 
 dependency "rg" {
@@ -25,4 +24,4 @@ inputs = merge(
 
 # https://github.com/Azure/terraform-azurerm-avm-res-network-virtualnetwork/blob/main/examples/complete_azurerm_v4/main.tf
 
-# https://github.com/Azure/terraform-azurerm-aks/blob/main/examples/multiple_node_pools/main.tf
+# https://learn.microsoft.com/en-us/azure/aks/aksarc/concepts-support#available-vm-sizes

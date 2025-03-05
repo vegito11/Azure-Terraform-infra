@@ -4,7 +4,7 @@ Infrastructure deployment script for your Terragrunt structure:
 
 Options:
     -e, --env     (Required) Environment name (e.g., staging, production)
-    -r, --region  (Required) Region name (e.g., west-india, east-us)
+    -r, --region  (Required) Region name (e.g., centralindia, east-us)
     -m, --module  (Optional) Module name (e.g., networking, apps). Operates on all modules if omitted.
     -a, --all     (Optional) Apply all modules under the specified region.
     -p, --plan    (Optional) Plan only. Do not apply.
@@ -92,8 +92,11 @@ if [[ "$DESTROY" == "true" ]]; then
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
         terragrunt run-all destroy \
             --terragrunt-working-dir "$WORKING_DIR" \
-            --terragrunt-include-external-dependencies \
             --terragrunt-non-interactive
+            # -terragrunt-exclude-external-dependencies
+            # --no-destroy-dependencies-check \
+            # --disable-dependent-modules \
+            # --terragrunt-include-external-dependencies \
     else
         echo "Aborted destroy operation."
         exit 0

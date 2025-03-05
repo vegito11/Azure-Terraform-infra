@@ -13,5 +13,10 @@ locals {
         name             = "staging-subnet-2"
         address_prefixes = ["11.0.240.0/20"]
       }
-    }    
+    }
+
+    akssubnet = "stgsubnet2"
+    
+    
+
 }
