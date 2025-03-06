@@ -4,5 +4,5 @@ include "root" {
 
 terraform {
   source = "${get_parent_terragrunt_dir()}/../modules//resource-group"
-   # source = "git::https://gitlab-ci-bott:${get_env("TF_PRIVATE_REPO_PAT", "")}@gitlab.com/vegito11/iac-modules.git/resource-group//."
+  # source = "git::https://gitlab-ci-bott:${get_env("TF_PRIVATE_REPO_PAT", "")}@gitlab.com/vegito11/iac-modules.git/resource-group//."
 }

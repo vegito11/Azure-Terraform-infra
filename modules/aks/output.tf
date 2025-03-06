@@ -20,8 +20,8 @@ output "admin_host" {
 
 output "admin_password" {
   description = "The `password` in the `azurerm_kubernetes_cluster`'s `kube_admin_config` block. A password or token used to authenticate to the Kubernetes cluster."
-  sensitive = true
-  value     = module.aks.admin_password
+  sensitive   = true
+  value       = module.aks.admin_password
 }
 
 output "oidc_issuer_url" {
@@ -31,13 +31,13 @@ output "oidc_issuer_url" {
 
 output "admin_username" {
   description = "The `username` in the `azurerm_kubernetes_cluster`'s `kube_admin_config` block. A username used to authenticate to the Kubernetes cluster."
-  sensitive = true
-  value     = module.aks.admin_username
+  sensitive   = true
+  value       = module.aks.admin_username
 }
 
 output "aks_id" {
-   description = "The `azurerm_kubernetes_cluster`'s id."
-  value = module.aks.aks_id
+  description = "The `azurerm_kubernetes_cluster`'s id."
+  value       = module.aks.aks_id
 }
 
 output "client_certificate" {
@@ -75,12 +75,12 @@ output "kube_raw" {
 
 output "password" {
   description = "The `password` in the `azurerm_kubernetes_cluster`'s `kube_config` block. A password or token used to authenticate to the Kubernetes cluster."
-  sensitive = true
-  value     = module.aks.password
+  sensitive   = true
+  value       = module.aks.password
 }
 
 output "username" {
   description = "The `username` in the `azurerm_kubernetes_cluster`'s `kube_config` block. A username used to authenticate to the Kubernetes cluster."
-  sensitive = true
-  value     = module.aks.username
+  sensitive   = true
+  value       = module.aks.username
 }

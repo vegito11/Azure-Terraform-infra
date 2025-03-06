@@ -13,7 +13,7 @@ dependency "vnet" {
 }
 
 locals {
-  env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
 }
 
@@ -21,22 +21,25 @@ inputs = merge(
   local.env_vars.locals,
   {
     resource_group_name = dependency.rg.outputs.default_resource_group_name
-    resource_group_id = dependency.rg.outputs.default_resource_group_id
-    
-    location = local.region_vars.locals.region_name
-    name    = "${local.env_vars.locals.envname}-vnet"
+    resource_group_id   = dependency.rg.outputs.default_resource_group_id
+    # additional_node_pools = local.env_vars.locals.additional_node_pools
+    additional_node_pools = {}
+    location              = local.region_vars.locals.region_name
+    name                  = "${local.env_vars.locals.envname}-vnet"
     aks_default_subnet_id = dependency.vnet.outputs.subnets[local.env_vars.locals.akssubnet].resource_id
     aks_agent_config = {
-      control_plane_k8s_version              = "1.32.0"
-      worker_node_k8s_version                = "1.32.0"
-      os_disk_size_gb                        = 20
-      system_pool_vm_size                    = "Standard_K8S2_v1"
-      system_pool_size_count                 = 2
-      system_pool_availability_zones         = ["2", "3"]
-      services_cidr                          = "192.169.0.0/16"
-      dns_service_ip                         = "192.169.0.10"
+      control_plane_k8s_version      = local.env_vars.locals.control_plane_k8s_version
+      worker_node_k8s_version        = local.env_vars.locals.worker_node_k8s_version
+      os_disk_size_gb                = 30
+      system_pool_vm_size            = "standard_b2als_v2"
+      spot_pool_vm_size              = "standard_d2a_v4"
+      system_pool_size_count         = 2
+      system_pool_availability_zones = ["2", "3"]
+      services_cidr                  = "192.169.0.0/16"
+      dns_service_ip                 = "192.169.0.10"
     }
   }
+
 )
 
 

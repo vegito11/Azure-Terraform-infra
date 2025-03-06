@@ -7,7 +7,7 @@ dependency "rg" {
 }
 
 locals {
-  env_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
 
 }
@@ -16,9 +16,9 @@ inputs = merge(
   local.env_vars.locals,
   {
     resource_group_name = dependency.rg.outputs.default_resource_group_name
-    resource_group_id = dependency.rg.outputs.default_resource_group_id
-    location = local.region_vars.locals.region_name
-    name    = "${local.env_vars.locals.envname}-vnet"
+    resource_group_id   = dependency.rg.outputs.default_resource_group_id
+    location            = local.region_vars.locals.region_name
+    name                = "${local.env_vars.locals.envname}-vnet"
   }
 )
 

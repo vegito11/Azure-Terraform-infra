@@ -4,6 +4,7 @@ variable "aks_agent_config" {
     worker_node_k8s_version        = string
     os_disk_size_gb                = number
     system_pool_vm_size            = string
+    spot_pool_vm_size              = string
     system_pool_size_count         = number
     system_pool_availability_zones = list(string)
     services_cidr                  = string
@@ -11,7 +12,31 @@ variable "aks_agent_config" {
   })
 }
 
+variable "additional_node_pools" {
+  description = "Additional node pools to add to the AKS cluster"
+  type = map(object({
+    name                  = string
+    orchestrator_version  = optional(string)
+    enable_auto_scaling   = bool
+    zones                 = list(string)
+    vm_size               = string
+    os_disk_size_gb       = number
+    os_disk_type          = string
+    priority              = string
+    eviction_policy       = string
+    min_count             = number
+    max_count             = number
+    max_pods              = number
+    vnet_subnet_id        = optional(string)
+    create_before_destroy = bool
+  }))
+  default = {}
+}
+
 variable "envname" {
+}
+
+variable "admin_group_obid" {
 }
 
 variable "aks_default_subnet_id" {

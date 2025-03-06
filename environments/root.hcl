@@ -15,7 +15,7 @@ locals {
 }
 
 # Generate an Azure provider block
-generate "provider" { 
+generate "provider" {
   path      = "provider.tf"
   if_exists = "overwrite_terragrunt"
   contents  = <<EOF
@@ -38,7 +38,7 @@ remote_state {
     storage_account_name = get_env("STATE_STORAGE_ACC_NAME", "omkar0infra0bucket")
     container_name       = get_env("STATE_CONTAINER_NAME", "terraform-state-${local.arn_tenant_id}")
     key                  = "${path_relative_to_include()}/terraform.tfstate"
-  } : {
+    } : {
     path = "${get_parent_terragrunt_dir()}/local-state/${local.region_folder_name}-${local.current_component}-terraform.tfstate"
   }
 
@@ -68,6 +68,7 @@ inputs = merge(
   local.env_vars.locals,
   local.region_vars.locals,
   {
-    client_secret = local.client_secret
+    client_secret         = local.client_secret
+    admin_group_object_id = get_env("TF_admin_group_object_id")
   }
 )

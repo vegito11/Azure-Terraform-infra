@@ -105,23 +105,23 @@ elif [[ "$PLAN_ONLY" == "true" ]]; then
     echo "=== Planning infrastructure changes in $WORKING_DIR ==="
     terragrunt run-all plan \
         --terragrunt-working-dir "$WORKING_DIR" \
-        --terragrunt-include-external-dependencies \
         --terragrunt-non-interactive
+        # --terragrunt-include-external-dependencies \
 else
     if [[ "$CREATE_ALL" == "true" ]]; then
         echo "=== Applying all modules in $WORKING_DIR ==="
         terragrunt run-all apply \
             --terragrunt-working-dir "$WORKING_DIR" \
-            --terragrunt-include-external-dependencies \
             --terragrunt-non-interactive
+            # --terragrunt-include-external-dependencies \
     else
         read -p "Are you sure you want to apply changes to $WORKING_DIR? (y/N): " confirm
         if [[ "$confirm" =~ ^[Yy]$ ]]; then
             echo "=== Applying infrastructure changes in $WORKING_DIR ==="
             terragrunt run-all apply \
                 --terragrunt-working-dir "$WORKING_DIR" \
-                --terragrunt-include-external-dependencies \
                 --terragrunt-non-interactive
+                # --terragrunt-include-external-dependencies \
         else
             echo "Aborted apply operation."
             exit 0

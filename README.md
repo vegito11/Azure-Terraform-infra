@@ -54,10 +54,12 @@
 
 ------------------------------------------------
 
-## [Infra explanation](./docs/02.1-Infra-Explanation.md)
+## Create K8s Infra
 
-
-
+```bash
+az aks get-credentials --resource-group staging --name "staging-aks" --admin
+az aks get-credentials --resource-group staging --name "staging-aks"
+```
 
 ## Reference
 
@@ -76,3 +78,5 @@
 5. [Sizes for virtual machines in Azure](https://learn.microsoft.com/en-us/azure/virtual-machines/sizes/overview?tabs=breakdownseries%2Cgeneralsizelist%2Ccomputesizelist%2Cmemorysizelist%2Cstoragesizelist%2Cgpusizelist%2Cfpgasizelist%2Chpcsizelist)
    
    [virtual machine size restrictions AKS](https://learn.microsoft.com/en-us/azure/aks/quotas-skus-regions#supported-vm-sizes)
+
+   [Azure Machine Selector](https://azure.microsoft.com/en-us/pricing/calculator/)

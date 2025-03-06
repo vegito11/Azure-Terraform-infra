@@ -19,7 +19,7 @@ variable "enable_nat_gateway" {
 variable "subnet_nat_gateway" {
   description = "Flag to conditionally add nat_gateway to subnets if not present"
   default = {
-    subnet1 = true
+    subnet1  = true
     subnet10 = true
   }
 }
@@ -27,7 +27,7 @@ variable "subnet_nat_gateway" {
 variable "subnet_network_security_group" {
   description = "Flag to conditionally add network_security_group to subnets if not present"
   default = {
-    subnet1 = true
+    subnet1  = true
     subnet10 = true
   }
 }
@@ -35,14 +35,14 @@ variable "subnet_network_security_group" {
 variable "subnet_route_table" {
   description = "Flag to conditionally add route_table to subnets if not present"
   default = {
-    subnet1 = true
+    subnet1  = true
     subnet10 = true
   }
 }
 
 variable "subnet_service_endpoints" {
   description = "Mapping of subnets to their service endpoints"
-  type = map(list(string))
+  type        = map(list(string))
   default = {
     subnet1 = ["Microsoft.Storage", "Microsoft.KeyVault"]
     subnet2 = []
@@ -52,7 +52,7 @@ variable "subnet_service_endpoints" {
 variable "subnet_service_endpoint_policies" {
   description = "Flag to conditionally add service_endpoint_policies to subnets if not present"
   default = {
-    subnet1 = true
+    subnet1  = true
     subnet10 = true
   }
 }
@@ -61,10 +61,10 @@ variable "subnet_delegations" {
   description = " conditionally add delegation to subnets if not present"
   default = {
     subnet10 = [{
-        name = "Microsoft.Web.serverFarms"
-        service_delegation = {
-          name = "Microsoft.Web/serverFarms"
-        }
+      name = "Microsoft.Web.serverFarms"
+      service_delegation = {
+        name = "Microsoft.Web/serverFarms"
+      }
     }]
   }
 }
@@ -72,7 +72,7 @@ variable "subnet_delegations" {
 variable "subnet_role_assignments" {
   description = "Flag to conditionally add role_assignments to subnets if not present"
   default = {
-    subnet1 = true
+    subnet1  = true
     subnet10 = true
   }
 }
@@ -81,9 +81,9 @@ variable "subnet_role_assignments" {
 ##--------------------------------------------------------
 
 variable "envname" {
-  type = string
+  type        = string
   description = "enviroment for which this resource belongs to - used as prefix in naming"
-  default = "testing"
+  default     = "testing"
 }
 
 variable "location" {

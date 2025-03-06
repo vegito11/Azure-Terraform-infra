@@ -5,11 +5,11 @@ resource "azurerm_route_table" "this" {
 }
 
 # Creating a DDoS Protection Plan in the specified location.
-resource "azurerm_network_ddos_protection_plan" "this" {
+/*resource "azurerm_network_ddos_protection_plan" "this" {
   location            = var.location
   name                = "${var.envname}-ddos-protection-plan"
   resource_group_name = var.resource_group_name
-}
+}*/
 
 #Creating a NAT Gateway in the specified location.
 resource "azurerm_nat_gateway" "this" {
@@ -79,19 +79,19 @@ module "vnet" {
   location            = var.location
   name                = "${var.envname}-vnet"
 
-  address_space = var.address_space
-  enable_telemetry    = var.enable_telemetry
+  address_space    = var.address_space
+  enable_telemetry = var.enable_telemetry
 
   dns_servers = {
     dns_servers = ["8.8.8.8"]
   }
 
-  ddos_protection_plan = {
+/*  ddos_protection_plan = {
     id = azurerm_network_ddos_protection_plan.this.id
     # due to resource cost
     enable = false
   }
-
+*/
   role_assignments = {
     role1 = {
       principal_id               = azurerm_user_assigned_identity.this.principal_id
@@ -115,35 +115,35 @@ module "vnet" {
       subnet_config,
       {
 
-         nat_gateway = lookup(var.subnet_nat_gateway, subnet_name, false) && (!contains(keys(subnet_config), "nat_gateway") || subnet_config["nat_gateway"] == null) ? {
-            id = var.enable_nat_gateway ? azurerm_nat_gateway.this[0].id : null
-         } : lookup(subnet_config, "nat_gateway", null)
+        nat_gateway = lookup(var.subnet_nat_gateway, subnet_name, false) && (!contains(keys(subnet_config), "nat_gateway") || subnet_config["nat_gateway"] == null) ? {
+          id = var.enable_nat_gateway ? azurerm_nat_gateway.this[0].id : null
+        } : lookup(subnet_config, "nat_gateway", null)
 
-          network_security_group = lookup(var.subnet_network_security_group, subnet_name, false) && (!contains(keys(subnet_config), "network_security_group") || subnet_config["network_security_group"] == null) ? {
-            id = azurerm_network_security_group.https.id
-          } : lookup(subnet_config, "network_security_group", null)
+        network_security_group = lookup(var.subnet_network_security_group, subnet_name, false) && (!contains(keys(subnet_config), "network_security_group") || subnet_config["network_security_group"] == null) ? {
+          id = azurerm_network_security_group.https.id
+        } : lookup(subnet_config, "network_security_group", null)
 
-          route_table = lookup(var.subnet_route_table, subnet_name, false) && (!contains(keys(subnet_config), "route_table") || subnet_config["route_table"] == null) ? {
-            id = azurerm_route_table.this.id
-          } : lookup(subnet_config, "route_table", null)
+        route_table = lookup(var.subnet_route_table, subnet_name, false) && (!contains(keys(subnet_config), "route_table") || subnet_config["route_table"] == null) ? {
+          id = azurerm_route_table.this.id
+        } : lookup(subnet_config, "route_table", null)
 
-          service_endpoints = lookup(var.subnet_service_endpoints, subnet_name, null) != null && lookup(var.subnet_service_endpoints, subnet_name, []) != [] && (!contains(keys(subnet_config), "service_endpoints") || subnet_config["service_endpoints"] == null) ? lookup(var.subnet_service_endpoints, subnet_name, []) : lookup(subnet_config, "service_endpoints", null)
+        service_endpoints = lookup(var.subnet_service_endpoints, subnet_name, null) != null && lookup(var.subnet_service_endpoints, subnet_name, []) != [] && (!contains(keys(subnet_config), "service_endpoints") || subnet_config["service_endpoints"] == null) ? lookup(var.subnet_service_endpoints, subnet_name, []) : lookup(subnet_config, "service_endpoints", null)
 
-          service_endpoint_policies = lookup(var.subnet_service_endpoint_policies, subnet_name, false) && (!contains(keys(subnet_config), "service_endpoint_policies") || subnet_config["service_endpoint_policies"] == null) ? {
-            policy1 = {
-              id = azurerm_subnet_service_endpoint_storage_policy.this.id
-            }
-          } : lookup(subnet_config, "service_endpoint_policies", null)
+        service_endpoint_policies = lookup(var.subnet_service_endpoint_policies, subnet_name, false) && (!contains(keys(subnet_config), "service_endpoint_policies") || subnet_config["service_endpoint_policies"] == null) ? {
+          policy1 = {
+            id = azurerm_subnet_service_endpoint_storage_policy.this.id
+          }
+        } : lookup(subnet_config, "service_endpoint_policies", null)
 
 
-          delegation = lookup(var.subnet_delegations, subnet_name, []) != []  ? var.subnet_delegations[subnet_name] : lookup(subnet_config, "delegation", null)
+        delegation = lookup(var.subnet_delegations, subnet_name, []) != [] ? var.subnet_delegations[subnet_name] : lookup(subnet_config, "delegation", null)
 
-          role_assignments = lookup(var.subnet_role_assignments, subnet_name, false) && (!contains(keys(subnet_config), "role_assignments") || subnet_config["role_assignments"] == null) ? {
-            role1 = {
-              principal_id               = azurerm_user_assigned_identity.this.principal_id
-              role_definition_id_or_name = "Contributor"
-            }
-          } : lookup(subnet_config, "role_assignments", null)
+        role_assignments = lookup(var.subnet_role_assignments, subnet_name, false) && (!contains(keys(subnet_config), "role_assignments") || subnet_config["role_assignments"] == null) ? {
+          role1 = {
+            principal_id               = azurerm_user_assigned_identity.this.principal_id
+            role_definition_id_or_name = "Contributor"
+          }
+        } : lookup(subnet_config, "role_assignments", null)
       }
     )
   }

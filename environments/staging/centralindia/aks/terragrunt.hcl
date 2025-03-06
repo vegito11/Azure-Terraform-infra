@@ -1,5 +1,5 @@
 include "root" {
-  path = find_in_parent_folders("root.hcl")
+  path   = find_in_parent_folders("root.hcl")
   expose = true
 }
 
@@ -8,5 +8,6 @@ include "env" {
 }
 
 inputs = {
-  location = include.root.inputs.region_name
+  location         = include.root.inputs.region_name
+  admin_group_obid = include.root.inputs.admin_group_object_id
 }
