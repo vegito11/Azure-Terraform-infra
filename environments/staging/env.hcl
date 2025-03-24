@@ -40,4 +40,12 @@ locals {
     }
   }
 
+  kubernetes_namespace = "app"
+
+  tags = {
+    owner     = "terraform"
+    env       = "staging"
+    component = "infra"
+  }
+
 }

@@ -86,6 +86,11 @@ variable "envname" {
   default     = "testing"
 }
 
+variable "companyname" {
+  type        = string
+  description = "companyname for which this resource belongs to - used as prefix in naming"
+}
+
 variable "location" {
   type        = string
   description = <<DESCRIPTION

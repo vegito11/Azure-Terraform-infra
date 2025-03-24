@@ -35,7 +35,7 @@ remote_state {
 
   config = local.use_remote_state == "true" ? {
     resource_group_name  = get_env("MGMT_RG_NAME", "management")
-    storage_account_name = get_env("STATE_STORAGE_ACC_NAME", "omkar0infra0bucket")
+    storage_account_name = get_env("STATE_STORAGE_ACC_NAME", "shopkart0infra0bucket")
     container_name       = get_env("STATE_CONTAINER_NAME", "terraform-state-${local.arn_tenant_id}")
     key                  = "${path_relative_to_include()}/terraform.tfstate"
     } : {
@@ -70,5 +70,7 @@ inputs = merge(
   {
     client_secret         = local.client_secret
     admin_group_object_id = get_env("TF_admin_group_object_id")
+    companyname           = get_env("TF_company_name", "shopkart")
+    subscription_id       = get_env("ARM_SUBSCRIPTION_ID")
   }
 )

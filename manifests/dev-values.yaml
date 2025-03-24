@@ -1,0 +1,37 @@
+image:
+  repository: nginx
+  tag: ""
+
+serviceAccount:
+  create: true
+  annotations:
+    azure.workload.identity/client-id: "asd"
+  name: ""
+
+service:
+  type: ClusterIP
+  port: 5000
+
+container:
+  env:
+    - name: AZURE_SUBSCRIPTION_ID
+      value: "test_subscription_name"
+    - name: AZURE_KEYVAULT_NAME
+      value: userapi
+    - name: AZURE_STORAGE_ACCOUNT
+      value: "storage_app"
+    - name: AZURE_CONTAINER_NAME
+      value: "app_data"
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls: []

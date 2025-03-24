@@ -23,6 +23,7 @@ CREATE_ALL=false
 PLAN_ONLY=false
 DESTROY=false
 RUN_INIT=false
+INIT_ONLY=false
 
 # Parse input flags
 while [[ "$#" -gt 0 ]]; do
@@ -34,8 +35,9 @@ while [[ "$#" -gt 0 ]]; do
         -p|--plan) PLAN_ONLY=true ;;
         -d|--destroy) DESTROY=true ;;
         --init) RUN_INIT=true ;;
+        --init-only) RUN_INIT=true; INIT_ONLY=true ;; 
         -h|--help) usage ;;
-        *) echo "Unknown option: $1"; usage ;;
+        *) EXTRA_ARGS+=("$1") ;;  # Collect additional arguments
     esac
     shift
 done
@@ -55,6 +57,7 @@ Create All: ${CREATE_ALL}
 Plan Only: ${PLAN_ONLY}
 Destroy: ${DESTROY}
 Run Init: ${RUN_INIT}
+Run INIT_ONLY: ${INIT_ONLY}
 EOF
 
 # Define the base directory
@@ -82,7 +85,13 @@ if [[ "$RUN_INIT" == "true" ]]; then
     echo "=== Initializing infrastructure in $WORKING_DIR ==="
     terragrunt init \
         --terragrunt-working-dir "$WORKING_DIR" \
-        --terragrunt-non-interactive
+        --terragrunt-non-interactive "${EXTRA_ARGS[@]}"
+    
+    # Exit immediately if --init-only flag is set
+    if [[ "$INIT_ONLY" == "true" ]]; then
+        echo "=== Init completed. Exiting as --init-only was specified. ==="
+        exit 0
+    fi        
 fi
 
 # Handle destroy operation
@@ -92,7 +101,7 @@ if [[ "$DESTROY" == "true" ]]; then
     if [[ "$confirm" =~ ^[Yy]$ ]]; then
         terragrunt run-all destroy \
             --terragrunt-working-dir "$WORKING_DIR" \
-            --terragrunt-non-interactive
+            --terragrunt-non-interactive "${EXTRA_ARGS[@]}"
             # -terragrunt-exclude-external-dependencies
             # --no-destroy-dependencies-check \
             # --disable-dependent-modules \
@@ -105,14 +114,14 @@ elif [[ "$PLAN_ONLY" == "true" ]]; then
     echo "=== Planning infrastructure changes in $WORKING_DIR ==="
     terragrunt run-all plan \
         --terragrunt-working-dir "$WORKING_DIR" \
-        --terragrunt-non-interactive
+        --terragrunt-non-interactive "${EXTRA_ARGS[@]}"
         # --terragrunt-include-external-dependencies \
 else
     if [[ "$CREATE_ALL" == "true" ]]; then
         echo "=== Applying all modules in $WORKING_DIR ==="
         terragrunt run-all apply \
             --terragrunt-working-dir "$WORKING_DIR" \
-            --terragrunt-non-interactive
+            --terragrunt-non-interactive "${EXTRA_ARGS[@]}"
             # --terragrunt-include-external-dependencies \
     else
         read -p "Are you sure you want to apply changes to $WORKING_DIR? (y/N): " confirm
@@ -120,7 +129,7 @@ else
             echo "=== Applying infrastructure changes in $WORKING_DIR ==="
             terragrunt run-all apply \
                 --terragrunt-working-dir "$WORKING_DIR" \
-                --terragrunt-non-interactive
+                --terragrunt-non-interactive "${EXTRA_ARGS[@]}"
                 # --terragrunt-include-external-dependencies \
         else
             echo "Aborted apply operation."

@@ -53,7 +53,7 @@ resource "azurerm_storage_account" "this" {
   account_replication_type = "LRS"
   account_tier             = "Standard"
   location                 = var.location
-  name                     = "${var.envname}0appstorage"
+  name                     = "${var.companyname}0${var.envname}0app"
   resource_group_name      = var.resource_group_name
 }
 
@@ -86,7 +86,7 @@ module "vnet" {
     dns_servers = ["8.8.8.8"]
   }
 
-/*  ddos_protection_plan = {
+  /*  ddos_protection_plan = {
     id = azurerm_network_ddos_protection_plan.this.id
     # due to resource cost
     enable = false

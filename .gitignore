@@ -42,3 +42,5 @@ terraform.rc
 
 backend.tf
 provider.tf
+
+**/secret*.yaml

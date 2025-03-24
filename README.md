@@ -4,31 +4,36 @@
 
 2. Create the required resources in Azure for storing Terraform state
 
+    > **NOTE :** You can the [bash_aliases](./scripts/bash_aliases.sh) script to set variables
+
     ```bash
     ARM_TENANT_ID="XXXXXXXX"
     MGMT_RG_NAME="management"
     LOCATION="centralindia"
-    STATE_STORAGE_ACC_NAME="omkar0infra0bucket"
+    STATE_STORAGE_ACC_NAME="shopkart0infra0bucket"
     STATE_CONTAINER_NAME="terraform-state-$ARM_TENANT_ID"
 
-    # 1. Create Resource Group
+    # 1. Create Resource Group🟩
     az group create --name $MGMT_RG_NAME --location $LOCATION
-
-    # 2. Create Storage Account
+ 
+    # 2. Create Storage Account  🟢
     az storage account create --name $STATE_STORAGE_ACC_NAME --resource-group $MGMT_RG_NAME --location $LOCATION --sku Standard_LRS --kind StorageV2
+     
+     ## Run below command if error - Code: SubscriptionNotFound ⭐
+     # az provider register -n Microsoft.Storage --subscription $ARM_SUBSCRIPTION_ID
 
-    # 3. Create Storage Container
+    # 3. Create Storage Container 🔰
     az storage container create --name $STATE_CONTAINER_NAME --account-name $STATE_STORAGE_ACC_NAME
     ```
 
     ```bash
-    # 1. Delete Storage Container
+    # 1. Delete Storage Container 🔴
     az storage container delete --name $STATE_CONTAINER_NAME --account-name $STATE_STORAGE_ACC_NAME
 
-    # 2. Delete Storage Account
+    # 2. Delete Storage Account 🔴
     az storage account delete --name $STATE_STORAGE_ACC_NAME --resource-group $MGMT_RG_NAME --yes
 
-    # 3. Delete Resource Group
+    # 3. Delete Resource Group 🔴
     az group delete  --name $MGMT_RG_NAME
     ```
 
@@ -36,29 +41,69 @@
     
     ```bash
     $ scripts/terragrunt_create.sh --env staging --region centralindia --module resource-group --plan
-    # Run init as well as plan
+    
+    # Migrate state or Reconfigure 🗃️
+    scripts/terragrunt_create.sh --env staging --region centralindia --module resource-group --init-only -reconfigure
+
+    # Run init as well as plan 🚧
     $ scripts/terragrunt_create.sh --env staging --region centralindia --module resource-group --plan --init
     
-    # Add sed if getting special characters in output
+    # Add sed if getting special characters in output 🎨
     $ scripts/terragrunt_create.sh --env staging --region centralindia --module resource-group --plan | sed -r 's/\x1b\[[0-9;]*m//g'
-    
-    $ scripts/terragrunt_create.sh --env staging --region centralindia --module networking --plan
 
-    # This will apply with automatically yes confirmation
+    # This will apply with automatically yes confirmation 🎯
     $ scripts/terragrunt_create.sh --env staging --region centralindia --module networking -a  | sed -r 's/\x1b\[[0-9;]*m//g'
 
-    # Destroy all modules
+    # Destroy all modules 🔴
     $ scripts/terragrunt_create.sh --env staging --region centralindia --all
 
     ```
 
 ------------------------------------------------
 
+## Create Azure Resource
+
+1. [Resource Group](modules/resource-group/main.tf)
+  
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module resource-group --plan | sed -r 's/\x1b\[[0-9;]*m//g'
+   ```
+
+2. [Networking](environments/_env/vnet.hcl)
+   
+   ```bash
+   # Or run terragrunt command without script
+   WORKING_DIR="$(pwd)/environments/staging/centralindia/networking"
+   WORKING_DIR=$(cygpath -w "$WORKING_DIR")
+
+   terragrunt init --reconfigure --terragrunt-working-dir "$WORKING_DIR"
+
+   export TF_company_name="something"
+   terragrunt apply --terragrunt-working-dir "$WORKING_DIR"
+   ```
+
+2. [AKS Cluster](environments/_env/aks.hcl)
+
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module aks --plan | sed -r 's/\x1b\[[0-9;]*m//g'
+   ```
+
+2. [Pod Workload Identity](environments/_env/identity.hcl)
+
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module access-control -p | sed -r 's/\x1b\[[0-9;]*m//g'
+   ```
+
 ## Create K8s Infra
 
 ```bash
 az aks get-credentials --resource-group staging --name "staging-aks" --admin
 az aks get-credentials --resource-group staging --name "staging-aks"
+```
+
+```bash
+cd manifests
+helm upgrade -i flaskapp  ./azureflaskapp  -f secret-values.yaml
 ```
 
 ## Reference
@@ -80,3 +125,8 @@ az aks get-credentials --resource-group staging --name "staging-aks"
    [virtual machine size restrictions AKS](https://learn.microsoft.com/en-us/azure/aks/quotas-skus-regions#supported-vm-sizes)
 
    [Azure Machine Selector](https://azure.microsoft.com/en-us/pricing/calculator/)
+
+6. [Deploy and configure workload identity on an Azure Kubernetes Service (AKS) cluster](https://learn.microsoft.com/en-us/azure/aks/workload-identity-deploy-cluster)
+
+    - [Use Microsoft Entra Workload ID with Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview?tabs=dotnet)
+    - [Migrate from pod managed-identity to workload identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-migrate-from-pod-identity)
