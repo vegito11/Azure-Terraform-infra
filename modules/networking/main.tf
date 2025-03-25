@@ -49,14 +49,6 @@ resource "azurerm_user_assigned_identity" "this" {
   resource_group_name = var.resource_group_name
 }
 
-resource "azurerm_storage_account" "this" {
-  account_replication_type = "LRS"
-  account_tier             = "Standard"
-  location                 = var.location
-  name                     = "${var.companyname}0${var.envname}0app"
-  resource_group_name      = var.resource_group_name
-}
-
 resource "azurerm_subnet_service_endpoint_storage_policy" "this" {
   location            = var.location
   name                = "sep-${var.envname}"
@@ -66,7 +58,7 @@ resource "azurerm_subnet_service_endpoint_storage_policy" "this" {
     name = "${var.envname}-se-storage-policy"
     service_resources = [
       var.resource_group_id,
-      azurerm_storage_account.this.id
+      var.storage_account_id
     ]
     description = "${var.envname} service endpoint storage policy"
     service     = "Microsoft.Storage"

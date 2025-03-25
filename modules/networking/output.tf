@@ -28,3 +28,11 @@ output "subnets" {
     } if v.resource_id != null
   }
 }
+
+output "appgw_id" {
+  description = " Application Gateway id"
+  value       = try(azurerm_application_gateway.appgw[0].id, null)
+}
+
+
+ 

@@ -13,8 +13,15 @@ locals {
       name             = "staging-subnet-2"
       address_prefixes = ["11.0.240.0/20"]
     }
+    "stgappgwsubnet" = {
+      name             = "staging-appgw-subnet"
+      address_prefixes = ["11.0.254.1/24"]
+    }
   }
-
+  
+  create_brown_field_application_gateway = false
+  app_subnet = "stgappgwsubnet"
+  
   akssubnet = "stgsubnet1"
 
   api_server_authorized_ip_ranges = ["103.159.152.100/32"]

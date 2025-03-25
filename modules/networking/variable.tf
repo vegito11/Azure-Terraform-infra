@@ -16,6 +16,11 @@ variable "enable_nat_gateway" {
   default = false
 }
 
+variable "create_brown_field_application_gateway" {
+  type    = bool
+  default = false
+}
+
 variable "subnet_nat_gateway" {
   description = "Flag to conditionally add nat_gateway to subnets if not present"
   default = {
@@ -110,6 +115,13 @@ variable "resource_group_id" {
   type        = string
   description = <<DESCRIPTION
 (Required) The name of the resource group where the resources will be deployed. 
+DESCRIPTION
+}
+
+variable "storage_account_id" {
+  type        = string
+  description = <<DESCRIPTION
+(Required) The name of the storage account which wil be used by application 
 DESCRIPTION
 }
 

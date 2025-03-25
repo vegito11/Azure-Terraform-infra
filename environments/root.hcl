@@ -72,5 +72,6 @@ inputs = merge(
     admin_group_object_id = get_env("TF_admin_group_object_id")
     companyname           = get_env("TF_company_name", "shopkart")
     subscription_id       = get_env("ARM_SUBSCRIPTION_ID")
+    location              = local.region_vars.locals.region_name
   }
 )

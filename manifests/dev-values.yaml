@@ -1,6 +1,6 @@
 image:
-  repository: nginx
-  tag: ""
+  repository: mycompanyapp.azurecr.io/az-sample-app
+  tag: "v2"
 
 serviceAccount:
   create: true

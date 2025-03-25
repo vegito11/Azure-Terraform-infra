@@ -68,6 +68,11 @@
    ```bash
    scripts/terragrunt_create.sh --env staging --region centralindia --module resource-group --plan | sed -r 's/\x1b\[[0-9;]*m//g'
    ```
+2. [Storage](modules/storage/main.tf)
+   
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module storage | sed -r 's/\x1b\[[0-9;]*m//g'
+   ```
 
 2. [Networking](environments/_env/vnet.hcl)
    
@@ -85,7 +90,7 @@
 2. [AKS Cluster](environments/_env/aks.hcl)
 
    ```bash
-   scripts/terragrunt_create.sh --env staging --region centralindia --module aks --plan | sed -r 's/\x1b\[[0-9;]*m//g'
+   scripts/terragrunt_create.sh --env staging --region centralindia --module aks | sed -r 's/\x1b\[[0-9;]*m//g'
    ```
 
 2. [Pod Workload Identity](environments/_env/identity.hcl)
@@ -94,12 +99,41 @@
    scripts/terragrunt_create.sh --env staging --region centralindia --module access-control -p | sed -r 's/\x1b\[[0-9;]*m//g'
    ```
 
+1. Get the output
+
+   ```bash
+   export TG_NON_INTERACTIVE="true"
+   export TERRAGRUNT_NON_INTERACTIVE="true"
+   
+   # Use this for windows cygwin
+   WORKING_DIR_WIN="$(cygpath -w "$(pwd)/environments/staging/centralindia")" # Use this for Windows
+   terragrunt output --terragrunt-working-dir "${WORKING_DIR_WIN}\networking"
+   terragrunt run-all output --terragrunt-working-dir "${WORKING_DIR_WIN}\access-control"
+   terragrunt output --terragrunt-working-dir "${WORKING_DIR_WIN}\storage"
+   
+   # Use this for linux
+   WORKING_DIR="$(pwd)/environments/staging/centralindia"
+   terragrunt output --terragrunt-working-dir "${WORKING_DIR}/networking"
+   terragrunt run-all output --terragrunt-working-dir "${WORKING_DIR}/access-control"
+   terragrunt run-all output --terragrunt-working-dir "${WORKING_DIR}/storage"
+   ```
+
+## Push Images to ACR
+
+```bash
+ACR_REPO_NAME="vegitoapp"
+az login
+az acr login --name $ACR_REPO_NAME
+docker push $ACR_REPO_NAME.azurecr.io/az-sample-app:v2
+```
+
 ## Create K8s Infra
 
 ```bash
 az aks get-credentials --resource-group staging --name "staging-aks" --admin
 az aks get-credentials --resource-group staging --name "staging-aks"
 ```
+
 
 ```bash
 cd manifests
