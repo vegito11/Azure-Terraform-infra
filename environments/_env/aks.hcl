@@ -15,6 +15,7 @@ dependency "vnet" {
 locals {
   env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
   region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  enable_app_gw = local.env_vars.locals.create_brown_field_application_gateway
 }
 
 inputs = merge(
@@ -27,6 +28,9 @@ inputs = merge(
     location              = local.region_vars.locals.region_name
     name                  = "${local.env_vars.locals.envname}-vnet"
     aks_default_subnet_id = dependency.vnet.outputs.subnets[local.env_vars.locals.akssubnet].resource_id
+    aks_apppgw_subnet_id  = local.enable_app_gw ? dependency.vnet.outputs.subnets[local.env_vars.locals.appgw_subnet].resource_id : null
+    aks_apppgw_id         = local.enable_app_gw ? dependency.vnet.outputs.appgw_id : null
+    
     aks_agent_config = {
       control_plane_k8s_version      = local.env_vars.locals.control_plane_k8s_version
       worker_node_k8s_version        = local.env_vars.locals.worker_node_k8s_version

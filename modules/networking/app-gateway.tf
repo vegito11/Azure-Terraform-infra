@@ -19,7 +19,7 @@ resource "azurerm_public_ip" "pip" {
 resource "azurerm_application_gateway" "appgw" {
   count = var.create_brown_field_application_gateway ? 1 : 0
 
-  location = local.resource_group.location
+  location = var.location
   #checkov:skip=CKV_AZURE_120:We don't need the WAF for this simple example
   name                = "${var.envname}-ingress"
   resource_group_name = var.resource_group_name
@@ -44,7 +44,7 @@ resource "azurerm_application_gateway" "appgw" {
   }
   gateway_ip_configuration {
     name      = "appGatewayIpConfig"
-    subnet_id = azurerm_subnet.appgw[0].id
+    subnet_id = module.vnet.subnets[var.appgw_subnet].resource_id
   }
   http_listener {
     frontend_ip_configuration_name = local.frontend_ip_configuration_name

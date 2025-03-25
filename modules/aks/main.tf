@@ -107,15 +107,18 @@ module "aks" {
 
   network_plugin             = "azure"
   network_policy             = "azure"
+  create_role_assignments_for_application_gateway = var.create_brown_field_application_gateway || var.create_brown_field_application_gateway
+  brown_field_application_gateway_for_ingress = var.create_brown_field_application_gateway ? {
+    id        = var.aks_apppgw_id
+    subnet_id = var.aks_apppgw_subnet_id
+  } : null
+
   net_profile_service_cidr   = var.aks_agent_config.services_cidr
   net_profile_dns_service_ip = var.aks_agent_config.dns_service_ip
   node_os_channel_upgrade    = "NodeImage"
   os_disk_size_gb            = var.aks_agent_config.os_disk_size_gb
 
-  /*  brown_field_application_gateway_for_ingress = {
-    id        = azurerm_application_gateway.app_gtw.id
-    subnet_id = data.azurerm_subnet.app_gtw.id
-  }*/
+
 
   maintenance_window = {
     allowed = [

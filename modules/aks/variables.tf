@@ -39,6 +39,16 @@ variable "envname" {
 variable "admin_group_obid" {
 }
 
+variable "aks_apppgw_subnet_id" {
+  type    = string
+  default = null
+}
+
+variable "aks_apppgw_id" {
+  type    = string
+  default = null
+}
+
 variable "aks_default_subnet_id" {
   description = "Default subnet id for AKS nodepools"
 }
@@ -485,6 +495,11 @@ variable "create_role_assignment_network_contributor" {
   default     = false
   description = "(Deprecated) Create a role assignment for the AKS Service Principal to be a Network Contributor on the subnets used for the AKS Cluster"
   nullable    = false
+}
+
+variable "create_brown_field_application_gateway" {
+  type    = bool
+  default = false
 }
 
 variable "create_role_assignments_for_application_gateway" {

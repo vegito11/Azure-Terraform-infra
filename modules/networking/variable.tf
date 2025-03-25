@@ -16,6 +16,11 @@ variable "enable_nat_gateway" {
   default = false
 }
 
+variable "appgw_subnet" {
+  type    = string
+  default = null
+}
+
 variable "create_brown_field_application_gateway" {
   type    = bool
   default = false
