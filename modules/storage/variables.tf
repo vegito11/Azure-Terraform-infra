@@ -9,6 +9,9 @@ variable "companyname" {
   type        = string
   description = "companyname for which this resource belongs to - used as prefix in naming"
 }
+variable "tenant_id" {
+  type = string
+}
 
 variable "location" {
   type        = string

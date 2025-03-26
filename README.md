@@ -74,7 +74,7 @@
    scripts/terragrunt_create.sh --env staging --region centralindia --module storage | sed -r 's/\x1b\[[0-9;]*m//g'
    ```
 
-2. [Networking](environments/_env/vnet.hcl)
+3. [Networking](environments/_env/vnet.hcl)
    
    ```bash
    # Or run terragrunt command without script
@@ -87,19 +87,20 @@
    terragrunt apply --terragrunt-working-dir "$WORKING_DIR"
    ```
 
-2. [AKS Cluster](environments/_env/aks.hcl)
+4. [AKS Cluster](environments/_env/aks.hcl)
 
    ```bash
    scripts/terragrunt_create.sh --env staging --region centralindia --module aks | sed -r 's/\x1b\[[0-9;]*m//g'
    ```
 
-2. [Pod Workload Identity](environments/_env/identity.hcl)
+5. [Pod Workload Identity](environments/_env/identity.hcl)
 
    ```bash
    scripts/terragrunt_create.sh --env staging --region centralindia --module access-control -p | sed -r 's/\x1b\[[0-9;]*m//g'
    ```
+-------------------------------------------
 
-1. Get the output
+## Get the outputs and update it in [dev-values.yaml](manifests/dev-values.yaml)
 
    ```bash
    export TG_NON_INTERACTIVE="true"
@@ -118,12 +119,13 @@
    terragrunt run-all output --terragrunt-working-dir "${WORKING_DIR}/storage"
    ```
 
-## Push Images to ACR
+## Push Images to ACR - [azure-flask-app code repo](https://github.com/vegito11/Sample-Apps/tree/azure-flask-app)
 
 ```bash
 ACR_REPO_NAME="vegitoapp"
 az login
 az acr login --name $ACR_REPO_NAME
+docker build -t $ACR_REPO_NAME.azurecr.io/az-sample-app:v2 . 
 docker push $ACR_REPO_NAME.azurecr.io/az-sample-app:v2
 ```
 
@@ -136,9 +138,53 @@ az aks get-credentials --resource-group staging --name "staging-aks"
 
 
 ```bash
+export APP_NAMESPACE=app
+kubectl create ns $APP_NAMESPACE
 cd manifests
-helm upgrade -i flaskapp  ./azureflaskapp  -f secret-values.yaml
+helm upgrade -i flaskapp  ./azureflaskapp  -f dev-values.yaml -f secret-values.yaml -n $APP_NAMESPACE
 ```
+
+--------------------------------------------------------------
+
+## API Endpoints & Usage
+
+### 1️⃣ List Azure Virtual Machines
+
+  ```sh
+  curl -X GET http://localhost:5000/list-vms
+  ```
+
+### 2️⃣ Get Secret from Azure Key Vault
+
+  ```sh
+  curl -X GET http://localhost:5000/get-secret/db-url
+  ```
+
+### 3️⃣ Create a Secret in Azure Key Vault
+
+  ```sh
+  curl -X POST http://localhost:5000/create-secret \
+       -H "Content-Type: application/json" \
+       -d '{"name": "dbpass", "value": "345fs435"}'
+  ```
+
+### 4️⃣ Upload File to Azure Blob Storage
+
+  ```sh
+  curl -X POST http://localhost:5000/upload-file \
+       -F "file=@/path/to/your/file.txt"
+
+ 
+  curl -X POST http://localhost:5000/upload-file -F "file=@README.md"
+  ```
+
+### 5️⃣ List Files in Azure Blob Storage
+
+  ```sh
+  curl -X GET http://localhost:5000/list-files
+  ```
+
+-------------------------------------------------
 
 ## Reference
 
@@ -164,3 +210,5 @@ helm upgrade -i flaskapp  ./azureflaskapp  -f secret-values.yaml
 
     - [Use Microsoft Entra Workload ID with Azure Kubernetes Service (AKS)](https://learn.microsoft.com/en-us/azure/aks/workload-identity-overview?tabs=dotnet)
     - [Migrate from pod managed-identity to workload identity](https://learn.microsoft.com/en-us/azure/aks/workload-identity-migrate-from-pod-identity)
+   
+7. [application-gateway-kubernetes-ingress](https://github.com/Azure/application-gateway-kubernetes-ingress)

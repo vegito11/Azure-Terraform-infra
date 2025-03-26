@@ -7,8 +7,13 @@ dependency "rg" {
 }
 
 dependency "aks" {
-  config_path   = "../../aks"
-  skip_outputs  = true
+  config_path = "../../aks"
+  # skip_outputs  = true
+  mock_outputs = {
+    aks_oidc_issuer_url = "https://aks-oidc.example.com"
+  }
+  # mock_outputs_allowed_terraform_commands = ["plan", "validate", "state"]
+
 }
 
 locals {
@@ -21,7 +26,7 @@ inputs = merge(
   {
     resource_group_name = dependency.rg.outputs.default_resource_group_name
     location            = local.region_vars.locals.region_name
-    # aks_oidc_issuer_url = dependency.aks.outputs.oidc_issuer_url
-    aks_oidc_issuer_url = "https://aks-oidc.example.com"
+    aks_oidc_issuer_url = dependency.aks.outputs.oidc_issuer_url
+
   }
 )

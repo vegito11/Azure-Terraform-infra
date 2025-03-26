@@ -15,16 +15,16 @@ locals {
     }
     "stgappgwsubnet" = {
       name             = "staging-appgw-subnet"
-      address_prefixes = ["11.0.254.1/24"]
+      address_prefixes = ["11.0.222.0/24"]
     }
   }
-  
+
   create_brown_field_application_gateway = true
-  appgw_subnet = "stgappgwsubnet"
-  
+  appgw_subnet                           = "stgappgwsubnet"
+
   akssubnet = "stgsubnet1"
 
-  api_server_authorized_ip_ranges = ["103.159.152.100/32"]
+  api_server_authorized_ip_ranges = ["103.xXX.XXX.XX/32"]
 
   control_plane_k8s_version = "1.32.0"
   worker_node_k8s_version   = "1.32.0"

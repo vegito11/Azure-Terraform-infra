@@ -28,10 +28,10 @@ data "azurerm_kubernetes_service_versions" "latest_version" {
   include_preview = false
 }
 
-/*data "http" "public_ip" {
+data "http" "public_ip" {
   method = "GET"
   url    = "http://api.ipify.org?format=json"
-}*/
+}
 
 
 data "azurerm_client_config" "current" {}
@@ -89,12 +89,12 @@ module "aks" {
   azure_policy_enabled            = true
   log_analytics_workspace_enabled = false
 
-  identity_ids                    = [azurerm_user_assigned_identity.aks.id]
-  identity_type                   = "UserAssigned"
-  local_account_disabled          = false
-  private_cluster_enabled         = false
-  api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
-  # api_server_authorized_ip_ranges   = [jsondecode(data.http.public_ip.response_body).ip]
+  identity_ids            = [azurerm_user_assigned_identity.aks.id]
+  identity_type           = "UserAssigned"
+  local_account_disabled  = false
+  private_cluster_enabled = false
+  # api_server_authorized_ip_ranges = var.api_server_authorized_ip_ranges
+  api_server_authorized_ip_ranges   = [jsondecode(data.http.public_ip.response_body).ip]
   rbac_aad                          = true
   rbac_aad_managed                  = true
   role_based_access_control_enabled = true
@@ -105,8 +105,9 @@ module "aks" {
   oidc_issuer_enabled       = true
   workload_identity_enabled = true
 
-  network_plugin             = "azure"
-  network_policy             = "azure"
+  attached_acr_id_map                             = var.attached_acr_id_map
+  network_plugin                                  = "azure"
+  network_policy                                  = "azure"
   create_role_assignments_for_application_gateway = var.create_brown_field_application_gateway || var.create_brown_field_application_gateway
   brown_field_application_gateway_for_ingress = var.create_brown_field_application_gateway ? {
     id        = var.aks_apppgw_id

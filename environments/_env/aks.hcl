@@ -12,9 +12,14 @@ dependency "vnet" {
   # skip_outputs = true
 }
 
+dependency "storage" {
+  config_path = "../storage"
+}
+
+
 locals {
-  env_vars    = read_terragrunt_config(find_in_parent_folders("env.hcl"))
-  region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+  env_vars      = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+  region_vars   = read_terragrunt_config(find_in_parent_folders("region.hcl"))
   enable_app_gw = local.env_vars.locals.create_brown_field_application_gateway
 }
 
@@ -30,7 +35,7 @@ inputs = merge(
     aks_default_subnet_id = dependency.vnet.outputs.subnets[local.env_vars.locals.akssubnet].resource_id
     aks_apppgw_subnet_id  = local.enable_app_gw ? dependency.vnet.outputs.subnets[local.env_vars.locals.appgw_subnet].resource_id : null
     aks_apppgw_id         = local.enable_app_gw ? dependency.vnet.outputs.appgw_id : null
-    
+
     aks_agent_config = {
       control_plane_k8s_version      = local.env_vars.locals.control_plane_k8s_version
       worker_node_k8s_version        = local.env_vars.locals.worker_node_k8s_version
@@ -41,6 +46,10 @@ inputs = merge(
       system_pool_availability_zones = ["2", "3"]
       services_cidr                  = "192.169.0.0/16"
       dns_service_ip                 = "192.169.0.10"
+    }
+
+    attached_acr_id_map = {
+      mgmt_acr = dependency.storage.outputs.acr_id
     }
   }
 

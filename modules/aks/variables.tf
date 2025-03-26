@@ -1392,6 +1392,8 @@ variable "secret_rotation_interval" {
   nullable    = false
 }
 
+
+
 variable "service_mesh_profile" {
   type = object({
     mode                             = string

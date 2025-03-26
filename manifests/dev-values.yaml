@@ -1,12 +1,22 @@
+fullnameOverride: "azureflaskapp"
+
 image:
   repository: mycompanyapp.azurecr.io/az-sample-app
-  tag: "v2"
+  tag: "v3"
 
 serviceAccount:
   create: true
   annotations:
-    azure.workload.identity/client-id: "asd"
-  name: ""
+    azure.workload.identity/client-id: "XX-XXX-XXX-XXX-XXX"
+  name: "flaskapp"
+
+azure.workload.identity/use: "true"
+
+tolerations:
+  - key: "kubernetes.azure.com/scalesetpriority"
+    operator: "Equal"
+    value: "spot"
+    effect: "NoSchedule"
 
 service:
   type: ClusterIP
@@ -15,22 +25,22 @@ service:
 container:
   env:
     - name: AZURE_SUBSCRIPTION_ID
-      value: "test_subscription_name"
+      value: "XXXXX-XXXX-XXXX-XXXX-XXXXX"
     - name: AZURE_KEYVAULT_NAME
-      value: userapi
+      value: "companyname0staging0secret"
     - name: AZURE_STORAGE_ACCOUNT
-      value: "storage_app"
+      value: "companyname0staging0app"
     - name: AZURE_CONTAINER_NAME
-      value: "app_data"
+      value: "app-data"
 
 ingress:
   enabled: false
-  className: ""
+  className: "azure-application-gateway"
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: chart-example.local
+    - host: "*"
       paths:
         - path: /
           pathType: ImplementationSpecific

@@ -8,7 +8,7 @@ locals {
 }
 
 resource "azurerm_public_ip" "pip" {
-  count = var.create_brown_field_application_gateway ? 1 : 0
+  count               = var.create_brown_field_application_gateway ? 1 : 0
   allocation_method   = "Static"
   location            = var.location
   name                = "${var.envname}-appgw-pip"
