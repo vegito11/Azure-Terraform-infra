@@ -34,13 +34,13 @@ container:
       value: "app-data"
 
 ingress:
-  enabled: false
+  enabled: true
   className: "azure-application-gateway"
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
   hosts:
-    - host: "*"
+    - host: ""
       paths:
         - path: /
           pathType: ImplementationSpecific

@@ -19,7 +19,7 @@ locals {
     }
   }
 
-  create_brown_field_application_gateway = true
+  create_brown_field_application_gateway = false
   appgw_subnet                           = "stgappgwsubnet"
 
   akssubnet = "stgsubnet1"

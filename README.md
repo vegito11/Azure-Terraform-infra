@@ -55,7 +55,7 @@
     $ scripts/terragrunt_create.sh --env staging --region centralindia --module networking -a  | sed -r 's/\x1b\[[0-9;]*m//g'
 
     # Destroy all modules 🔴
-    $ scripts/terragrunt_create.sh --env staging --region centralindia --all
+    $ scripts/terragrunt_create.sh --env staging --region centralindia --destroy --all
 
     ```
 
@@ -183,6 +183,41 @@ helm upgrade -i flaskapp  ./azureflaskapp  -f dev-values.yaml -f secret-values.y
   ```sh
   curl -X GET http://localhost:5000/list-files
   ```
+
+-------------------------------------------------
+
+## Destroy
+
+1. [Pod Workload Identity](environments/_env/identity.hcl)
+
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module access-control --destroy | sed -r 's/\x1b\[[0-9;]*m//g'
+   ```
+
+2. [AKS Cluster](environments/_env/aks.hcl)
+
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module aks --destroy | sed -r 's/\x1b\[[0-9;]*m//g'
+   ```
+
+3. [Networking](environments/_env/vnet.hcl)
+   
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module networking --destroy -a | sed -r 's/\x1b\[[0-9;]*m//g'
+   ```
+
+4. [Storage](modules/storage/main.tf)
+   
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module storage --destroy | sed -r 's/\x1b\[[0-9;]*m//g'
+   ```
+
+5. [Resource Group](modules/resource-group/main.tf)
+  
+   ```bash
+   scripts/terragrunt_create.sh --env staging --region centralindia --module resource-group --plan | sed -r 's/\x1b\[[0-9;]*m//g'
+   $ scripts/terragrunt_create.sh --env staging --region centralindia --module resource-group --destroy --all
+   ```
 
 -------------------------------------------------
 
